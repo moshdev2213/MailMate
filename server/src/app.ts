@@ -8,7 +8,7 @@ const app = express()
 
 // middleware
 app.use(cors(appConfig.cors));
-app.use(express.json)
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // request loggings
