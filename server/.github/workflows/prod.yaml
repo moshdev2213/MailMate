@@ -1,0 +1,44 @@
+name: CI/CD - Production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build-and-deploy-prod:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REGISTRY: registry.digitalocean.com/mosh-do-docker-reg
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Login to DigitalOcean Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }} #registry.digitalocean.com
+          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          password: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t $DOCKER_REGISTRY/mailmate-server:prod .
+
+      - name: Push Docker image
+        run: docker push $DOCKER_REGISTRY/mailmate-server:prod
+
+      - name: Deploy to DigitalOcean App Platform (Prod)
+        env:
+          DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
+        run: doctl apps update ${{ secrets.APP_ID_PROD }} --spec .do/app-prod.yaml
