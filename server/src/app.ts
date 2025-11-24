@@ -3,6 +3,7 @@ import cors from 'cors'
 import { appConfig } from './config/app';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { logger } from './utils/logger.util';
+import { env } from './config/env';
 
 const app = express()
 
@@ -24,7 +25,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.get("/", (req: Request, res: Response) => {
     res.json({
         status: 'ok',
-        message:'server online',
+        message: `${env.NODE_ENV} Server Online`,
         timestamp:new Date().toISOString()
     })
 })
