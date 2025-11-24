@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+logs/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+generated/
+
+/src/generated/prisma
