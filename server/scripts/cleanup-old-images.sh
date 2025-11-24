@@ -2,21 +2,41 @@
 set -e
 
 # Config
-REGISTRY="mosh-do-docker-reg"         # DO registry namespace
-REPO="mailmate-server"                # repository name in that registry
-FULL_REPO="$REGISTRY/$REPO"           # full repository path
+REGISTRY_NAME="mosh-do-docker-reg"    # Registry namespace only
+REPO_NAME="mailmate-server"           # Repository name only
 
-# Fetch all tags
-TAGS=$(doctl registry repository list-tags $FULL_REPO --format Tag --no-header)
+echo "Starting cleanup for Repo: $REPO_NAME in Registry: $REGISTRY_NAME..."
 
-# Delete all except prod and staging
+# 1. Fetch all tags
+# FIX: Removed "$REGISTRY/" from the argument. Added "--registry" flag.
+TAGS=$(doctl registry repository list-tags $REPO_NAME \
+  --registry $REGISTRY_NAME \
+  --format Tag \
+  --no-header \
+  --access-token $DO_API_TOKEN)
+
+if [ -z "$TAGS" ]; then
+  echo "No tags found or error fetching tags."
+  exit 0
+fi
+
+# 2. Loop and Delete
 echo "$TAGS" | while read TAG; do
-  if [[ "$TAG" != "production" && "$TAG" != "staging" ]]; then
-    echo "Deleting old/unwanted image: $REPO:$TAG"
-    doctl registry repository delete-tag $FULL_REPO $TAG --force
+  # Logic: Keep 'production', 'staging', AND any tag starting with 'v' (e.g., v1.0.2)
+  # If you strictly want ONLY prod and staging, remove the `&& "$TAG" != v*` part.
+  if [[ "$TAG" != "production" && "$TAG" != "staging" && "$TAG" != v* ]]; then
+    
+    echo "Deleting old/unwanted image: $REPO_NAME:$TAG"
+    
+    # FIX: Syntax for delete command
+    doctl registry repository delete-tag $REPO_NAME:$TAG \
+      --registry $REGISTRY_NAME \
+      --access-token $DO_API_TOKEN \
+      --force
+
   else
-    echo "Keeping image: $REPO:$TAG"
+    echo "Keeping image: $REPO_NAME:$TAG"
   fi
 done
 
-echo "Cleanup completed. Only 'production' and 'staging' images retained."
+echo "Cleanup completed."
