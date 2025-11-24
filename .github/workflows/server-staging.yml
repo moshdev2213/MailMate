@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - staging
-    # paths:
-    #   - "server/**"
 
 jobs:
   build-and-deploy-staging:
@@ -20,22 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set working directory to server
-        run: cd server
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Install dependencies
-        working-directory: server
-        run: npm ci
-
-      - name: Build TypeScript
-        working-directory: server
-        run: npm run build
-
       - name: Login to DigitalOcean Container Registry
         uses: docker/login-action@v3
         with:
@@ -47,18 +29,21 @@ jobs:
         working-directory: server
         run: |
           docker build \
-            -f server/Dockerfile \
-            -t $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} server/
+            -f Dockerfile \
+            -t $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            .
 
       - name: Push Docker image
         working-directory: server
         run: |
           docker push $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
+      - name: Install doctl
+        run: |
+          sudo snap install doctl --classic
+          doctl auth init -t ${{ secrets.DO_API_TOKEN }}
+
       - name: Deploy to DigitalOcean App Platform (Staging)
-        env:
-          DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
         run: |
           doctl apps update ${{ secrets.APP_ID_STG }} \
-            --spec server/.do/server-app-staging.yaml \
-            --access-token $DO_API_TOKEN
+            --spec .do/server-app-staging.yaml
