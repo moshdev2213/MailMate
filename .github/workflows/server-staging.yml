@@ -37,13 +37,3 @@ jobs:
         working-directory: server
         run: |
           docker push $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-
-      # - name: Install doctl
-      #   run: |
-      #     sudo snap install doctl --classic
-      #     doctl auth init -t ${{ secrets.DO_API_TOKEN }}
-
-      # - name: Deploy to DigitalOcean App Platform (Staging)
-      #   run: |
-      #     doctl apps update ${{ secrets.APP_ID_STG }} \
-      #       --spec .do/server-app-staging.yaml
