@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - staging
-    paths:
-      - "server/**"
+    # paths:
+    #   - "server/**"
 
 jobs:
   build-and-deploy-staging:
