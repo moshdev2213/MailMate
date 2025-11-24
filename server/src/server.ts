@@ -13,7 +13,7 @@ async function startServer() {
         // display banner
         const server = app.listen(env.PORT, () => {
             displayBanner();
-            logger.info(`${env.NODE_ENV} Server running on port ${env.PORT}`, {
+            logger.info(`${env.NODE_ENV} Server Running On Port ${env.PORT}`, {
                 port: env.PORT,
                 environment: env.NODE_ENV,
             });
