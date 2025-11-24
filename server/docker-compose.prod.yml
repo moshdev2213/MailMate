@@ -1,0 +1,9 @@
+services:
+  api:
+    image: moshdev/mailmate-server:latest
+    ports:
+      - "4000:4000"    # Prod port
+    env_file:
+      - .env.prod
+    environment:
+      - PORT=4000
