@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - production
-    paths:
-      - "server/**"
+    # paths:
+    #   - "server/**"
 
 jobs:
   build-and-deploy-prod:
