@@ -38,12 +38,12 @@ jobs:
         run: |
           docker push $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
-      - name: Install doctl
-        run: |
-          sudo snap install doctl --classic
-          doctl auth init -t ${{ secrets.DO_API_TOKEN }}
+      # - name: Install doctl
+      #   run: |
+      #     sudo snap install doctl --classic
+      #     doctl auth init -t ${{ secrets.DO_API_TOKEN }}
 
-      - name: Deploy to DigitalOcean App Platform (Prod)
-        run: |
-          doctl apps update ${{ secrets.APP_ID_PROD }} \
-            --spec .do/server-app-prod.yaml
+      # - name: Deploy to DigitalOcean App Platform (Prod)
+      #   run: |
+      #     doctl apps update ${{ secrets.APP_ID_PROD }} \
+      #       --spec .do/server-app-prod.yaml
