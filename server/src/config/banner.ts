@@ -16,12 +16,12 @@ export function getBanner(): string {
   switch (env.NODE_ENV) {
     case 'production':
       banner = `${colors.red}╔═══════════════════════════════════════╗${colors.reset}\n`;
-      banner += `${colors.red}║ Server started in ${mode.padEnd(10)} mode║${colors.reset}\n`;
+      banner += `${colors.red}║ Server started in ${mode.padEnd(10)} mode   ║${colors.reset}\n`;
       banner += `${colors.red}╚═══════════════════════════════════════╝${colors.reset}`;
       break;
     case 'staging':
       banner = `${colors.yellow}╔═══════════════════════════════════════╗${colors.reset}\n`;
-      banner += `${colors.yellow}║ Server started in ${mode.padEnd(10)} mode║${colors.reset}\n`;
+      banner += `${colors.yellow}║ Server started in ${mode.padEnd(10)} mode   ║${colors.reset}\n`;
       banner += `${colors.yellow}╚═══════════════════════════════════════╝${colors.reset}`;
       break;
     case 'development':

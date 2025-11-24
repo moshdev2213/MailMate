@@ -1,0 +1,9 @@
+services:
+  api:
+    image: moshdev/mailmate-server:latest
+    ports:
+      - "3500:3500"    # Staging port
+    env_file:
+      - .env.staging
+    environment:
+      - PORT=3500
