@@ -11,7 +11,7 @@ jobs:
 
     env:
       DOCKER_REGISTRY: registry.digitalocean.com
-      IMAGE_NAME: mosh-do-docker-reg/mailmate-server
+      IMAGE_NAME: mosh-do-docker-reg/mailmate-server-staging
       IMAGE_TAG: staging
 
     steps:
