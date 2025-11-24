@@ -4,41 +4,62 @@ on:
   push:
     branches:
       - production
+    paths:
+      - "server/**"
 
 jobs:
   build-and-deploy-prod:
     runs-on: ubuntu-latest
+
     env:
       DOCKER_REGISTRY: registry.digitalocean.com/mosh-do-docker-reg
+      IMAGE_NAME: mailmate-server
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Install Node only for build step (inside server/)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: 20
 
       - name: Install dependencies
+        working-directory: server
         run: npm ci
 
       - name: Build TypeScript
+        working-directory: server
         run: npm run build
 
-      - name: Login to DigitalOcean Container Registry
+      # Login to DigitalOcean Container Registry
+      - name: Login to DO Container Registry
         uses: docker/login-action@v4
         with:
-          registry: ${{ env.DOCKER_REGISTRY }} #registry.digitalocean.com
-          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: "doctr"
           password: ${{ secrets.DO_API_TOKEN }}
 
+      # Build Docker image (correct path → server/)
       - name: Build Docker image
-        run: docker build -t $DOCKER_REGISTRY/mailmate-server:prod .
+        run: |
+          docker build \
+            -f server/Dockerfile \
+            -t $DOCKER_REGISTRY/$IMAGE_NAME:prod \
+            server/
 
       - name: Push Docker image
-        run: docker push $DOCKER_REGISTRY/mailmate-server:prod
+        run: docker push $DOCKER_REGISTRY/$IMAGE_NAME:prod
 
+      # Install doctl
+      - name: Install doctl
+        run: |
+          sudo snap install doctl
+          doctl auth init -t ${{ secrets.DO_API_TOKEN }}
+
+      # Deploy to DigitalOcean App Platform
       - name: Deploy to DigitalOcean App Platform (Prod)
-        env:
-          DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
-        run: doctl apps update ${{ secrets.APP_ID_PROD }} --spec .do/app-prod.yaml
+        run: |
+          doctl apps update ${{ secrets.APP_ID_PROD }} \
+            --spec server/.do/server-app-prod.yaml

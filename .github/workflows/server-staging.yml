@@ -1,44 +1,64 @@
-name: Server - Staging
+name: Server Staging Deploy
 
 on:
   push:
     branches:
       - staging
+    paths:
+      - "server/**"
 
 jobs:
   build-and-deploy-staging:
     runs-on: ubuntu-latest
+
     env:
       DOCKER_REGISTRY: registry.digitalocean.com
+      IMAGE_NAME: mosh-do-docker-reg/mailmate-server
+      IMAGE_TAG: staging
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set working directory to server
+        run: cd server
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Install dependencies
+        working-directory: server
         run: npm ci
 
       - name: Build TypeScript
+        working-directory: server
         run: npm run build
 
       - name: Login to DigitalOcean Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          username: ${{ secrets.DOCR_USERNAME }}
           password: ${{ secrets.DO_API_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t $DOCKER_REGISTRY/mosh-do-docker-reg/mailmate-server:staging .
+        working-directory: server
+        run: |
+          docker build \
+            -f server/Dockerfile \
+            -t $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} server/
 
       - name: Push Docker image
-        run: docker push $DOCKER_REGISTRY/mosh-do-docker-reg/mailmate-server:staging
+        working-directory: server
+        run: |
+          docker push $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Deploy to DigitalOcean App Platform (Staging)
         env:
           DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
-        run: doctl apps update ${{ secrets.APP_ID_STG }} --spec .do/app-staging.yaml
+        run: |
+          doctl apps update ${{ secrets.APP_ID_STG }} \
+            --spec server/.do/server-app-staging.yaml \
+            --access-token $DO_API_TOKEN
