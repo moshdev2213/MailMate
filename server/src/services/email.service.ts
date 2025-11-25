@@ -85,9 +85,10 @@ class EmailService {
     async getEmailsFromDatabase(
         userId: number,
         limit: number,
-        offset: number
+        offset: number,
+        search?: string
     ) {
-        return emailRepository.findManyByUserId(userId, limit, offset)
+        return emailRepository.findManyByUserId(userId, limit, offset, search)
     }
 }
 export const emailService = new EmailService()
