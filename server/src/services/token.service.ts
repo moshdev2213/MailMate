@@ -16,7 +16,7 @@ export interface TokenResponse {
   token_type: string;
 }
 
-export const tokenService = {
+class TokenService {
   async refreshAccessToken(encryptedRefreshToken: string): Promise<TokenResponse> {
     try {
       const refreshToken = decrypt(encryptedRefreshToken);
@@ -25,7 +25,7 @@ export const tokenService = {
       });
 
       const { credentials } = await oauth2Client.refreshAccessToken();
-      
+
       if (!credentials.access_token) {
         throw new Error('Failed to refresh access token');
       }
@@ -42,12 +42,12 @@ export const tokenService = {
       logger.error('Token refresh failed', { error });
       throw new Error('Failed to refresh access token');
     }
-  },
+  }
 
   async getAccessToken(code: string): Promise<TokenResponse> {
     try {
       const { tokens } = await oauth2Client.getToken(code);
-      
+
       if (!tokens.access_token) {
         throw new Error('Failed to get access token');
       }
@@ -64,6 +64,7 @@ export const tokenService = {
       logger.error('Token exchange failed', { error });
       throw new Error('Failed to exchange authorization code');
     }
-  },
+  }
 };
 
+export const tokenService = new TokenService()

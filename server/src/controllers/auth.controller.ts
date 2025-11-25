@@ -18,7 +18,7 @@ class AuthController {
         try {
             const authUrl = oauth2Client.generateAuthUrl({
                 access_type: 'offline',
-                scope: ['profile', 'email', 'https://www.googleapis.com/auth/gmail.readonly'],
+                scope: ['profile', 'email', 'https://mail.google.com/','https://www.googleapis.com/auth/gmail.readonly'],
                 prompt: 'consent',
             });
 
