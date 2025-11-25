@@ -4,6 +4,7 @@ import { appConfig } from './config/app';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { logger } from './utils/logger.util';
 import { env } from './config/env';
+import routes from './routes/index.routes';
 
 const app = express()
 
@@ -21,6 +22,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     })
     next()
 })
+
+// app api routes
+app.use('/api',routes)
 
 app.get("/", (req: Request, res: Response) => {
     res.json({
