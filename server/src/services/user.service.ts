@@ -1,4 +1,5 @@
 import { userRepository, CreateUserData } from "../repositories/user.repository";
+import { tokenService } from "./token.service";
 
 class UserService {
     async findOrCreateUser(data: CreateUserData) {
@@ -19,6 +20,29 @@ class UserService {
             throw new Error('User not found');
         }
         return user;
+    }
+    async findByIdWithEmail(id: number) {
+        const user = await userRepository.findByIdWithEmail(id);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user;
+    }
+
+    async getAccessToken(userId: number): Promise<string> {
+        const user = await userRepository.findById(userId)
+        if (!user || !user.refreshToken) {
+            throw new Error('User has no refresh token');
+        }
+        try {
+            const tokenResponse = await tokenService.refreshAccessToken(user.refreshToken)
+            if (tokenResponse.refresh_token) {
+                await userRepository.updateRefreshToken(userId, tokenResponse.refresh_token);
+            }
+            return tokenResponse.access_token;
+        } catch (error) {
+            throw new Error('Failed to get access token');
+        }
     }
 }
 export const userService = new UserService();

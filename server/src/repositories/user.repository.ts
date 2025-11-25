@@ -19,7 +19,7 @@ class UserRepository {
             where: { email }
         })
     }
-    async findById(id: number) {
+    async findByIdWithEmail(id: number) {
         return prisma.user.findUnique({
             where: { id },
             include: {
@@ -28,6 +28,11 @@ class UserRepository {
                     orderBy: { date: 'desc' }
                 }
             }
+        })
+    }
+    async findById(id: number) {
+        return prisma.user.findUnique({
+            where: { id }
         })
     }
     async create(data: CreateUserData) {

@@ -120,13 +120,13 @@ class AuthController {
             return sendError(res, 'Invalid or expired refresh token', 'UNAUTHORIZED', 401);
         }
     }
-    async getCurrentUser(req: Request, res: Response) {
-        if (!req.user) {
-            return sendError(res, 'User not authenticated', 'UNAUTHORIZED', 401);
-        }
-
+    async getCurrentUser(req: Request, res: Response, next: NextFunction) {
         try {
-            const user = await userService.findById(req.user.id);
+            if (!req.user) {
+                return sendError(res, 'User not authenticated', 'UNAUTHORIZED', 401);
+            }
+
+            const user = await userService.findByIdWithEmail(req.user.id);
 
             sendSuccess(res, {
                 user: {
@@ -137,7 +137,7 @@ class AuthController {
             });
         } catch (error) {
             logger.error('Failed to get user', { error });
-            return sendError(res, 'Failed to get user', 'INTERNAL_ERROR', 500);
+            next(error);
         }
     }
     logout(req: Request, res: Response) {
