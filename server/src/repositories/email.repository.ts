@@ -39,16 +39,26 @@ class EmailRepository {
             create: data,
         })
     }
-    async findManyByUserId(userId: number, limit: number, offset: number) {
+    async findManyByUserId(userId: number, limit: number, offset: number, search?: string) {
+        const whereClause: any = { userId };
+        
+        if (search && search.trim()) {
+            const searchTerm = search.trim();
+            whereClause.OR = [
+                { subject: { contains: searchTerm } },
+                { from: { contains: searchTerm } },
+            ];
+        }
+
         const [emails, total] = await Promise.all([
             prisma.emailMetadata.findMany({
-                where: { userId },
+                where: whereClause,
                 take: limit,
                 skip: offset,
                 orderBy: { date: 'desc' }
             }),
             prisma.emailMetadata.count({
-                where: { userId }
+                where: whereClause
             })
         ])
         return {

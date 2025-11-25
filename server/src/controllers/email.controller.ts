@@ -13,6 +13,7 @@ class EmailController {
 
       const limit = parseInt(req.query.limit as string, 10) || 20;
       const offset = parseInt(req.query.offset as string, 10) || 0;
+      const search = req.query.search as string | undefined;
 
       // Optionally fetch fresh emails from Gmail
       const shouldRefresh = req.query.refresh === 'true';
@@ -28,7 +29,8 @@ class EmailController {
       const result = await emailService.getEmailsFromDatabase(
         req.user.id,
         limit,
-        offset
+        offset,
+        search
       );
 
       sendSuccess(res, {
