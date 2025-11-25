@@ -2,16 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import EmailList from "@/components/email-list"
-import SearchBar from "@/components/search-bar"
-import Header from "@/components/header"
-import ErrorAlert from "@/components/error-alert"
-
-interface User {
-  id: string
-  email: string
-  name: string
-}
+import EmailList from "@/components/email/email-list"
+import SearchBar from "@/components/email/search-bar"
+import Header from "@/components/layout/header"
+import ErrorAlert from "@/components/layout/error-alert"
+import { getCurrentUser, logout } from "@/lib/api/auth"
+import type { User } from "@/types"
 
 export default function DashboardClient({ token }: { token: string }) {
   const router = useRouter()
@@ -21,35 +17,12 @@ export default function DashboardClient({ token }: { token: string }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`${apiUrl}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user")
-        }
-
-        const data = await response.json()
-        // Backend returns { success: true, data: { user: {...} } }
-        if (data.success && data.data?.user) {
-          const userData = data.data.user
-          // Ensure ID is a string (backend returns number)
-          setUser({
-            id: userData.id?.toString() || '',
-            email: userData.email || '',
-            name: userData.name || 'User',
-          })
-        } else {
-          throw new Error("Invalid response format")
-        }
+        const userData = await getCurrentUser(token)
+        setUser(userData)
       } catch (err) {
         setError("Failed to load user information")
         console.error(err)
@@ -59,26 +32,18 @@ export default function DashboardClient({ token }: { token: string }) {
     }
 
     fetchUser()
-  }, [token, apiUrl])
+  }, [token])
 
   const handleLogout = useCallback(async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (response.ok) {
-        document.cookie = "authToken=; max-age=0; path=/;"
-        router.push("/")
-      }
+      await logout(token)
+      document.cookie = "authToken=; max-age=0; path=/;"
+      router.push("/")
     } catch (err) {
       console.error("Logout error:", err)
       setError("Failed to logout")
     }
-  }, [token, apiUrl, router])
+  }, [token, router])
 
   if (loading) {
     return (
@@ -115,3 +80,4 @@ export default function DashboardClient({ token }: { token: string }) {
     </div>
   )
 }
+
