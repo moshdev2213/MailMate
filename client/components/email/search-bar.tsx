@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 
 interface SearchBarProps {
@@ -52,3 +51,4 @@ export default function SearchBar({ searchQuery, onSearchChange, onPage }: Searc
     </form>
   )
 }
+

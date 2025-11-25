@@ -31,3 +31,4 @@ export default function ErrorAlert({ message, onClose }: ErrorAlertProps) {
     </div>
   )
 }
+

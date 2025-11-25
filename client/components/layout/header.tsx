@@ -1,12 +1,7 @@
 "use client"
 
 import { useState } from "react"
-
-interface User {
-  id: string
-  email: string
-  name: string
-}
+import type { User } from "@/types"
 
 interface HeaderProps {
   user: User | null
@@ -74,3 +69,4 @@ export default function Header({ user, onLogout }: HeaderProps) {
     </header>
   )
 }
+

@@ -1,20 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import EmailCard from "@/components/email-card"
-import PaginationControls from "@/components/pagination-controls"
-
-interface Email {
-  id: string
-  messageId: string
-  subject: string
-  from: string
-  to: string
-  date: string
-  preview: string
-  hasAttachments: boolean
-  isRead: boolean
-}
+import EmailCard from "./email-card"
+import PaginationControls from "./pagination-controls"
+import { getEmails } from "@/lib/api/email"
+import type { Email } from "@/types"
 
 interface EmailListProps {
   token: string
@@ -30,59 +20,24 @@ export default function EmailList({ token, searchQuery, currentPage, onPageChang
   const [totalPages, setTotalPages] = useState(0)
   const [totalEmails, setTotalEmails] = useState(0)
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
   const pageSize = 10
 
   useEffect(() => {
     const fetchEmails = async () => {
       try {
         setLoading(true)
-        // Convert page to offset (backend uses offset/limit, not page/limit)
         const offset = (currentPage - 1) * pageSize
-        const params = new URLSearchParams({
-          offset: offset.toString(),
-          limit: pageSize.toString(),
-          ...(searchQuery && { search: searchQuery }),
+
+        const result = await getEmails({
+          token,
+          offset,
+          limit: pageSize,
+          search: searchQuery || undefined,
         })
 
-        const response = await fetch(`${apiUrl}/api/email?${params.toString()}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch emails")
-        }
-
-        const data = await response.json()
-        
-        // Backend returns { success: true, data: { emails: [...], pagination: {...} } }
-        if (data.success && data.data) {
-          const emails = data.data.emails || []
-          const pagination = data.data.pagination || {}
-          const total = pagination.total || 0
-          
-          // Map backend email structure to frontend structure
-          const mappedEmails = emails.map((email: any) => ({
-            id: email.id?.toString() || email.gmailUid || '',
-            messageId: email.messageId || '',
-            subject: email.subject || '(No subject)',
-            from: email.from || 'Unknown sender',
-            to: '', // Backend doesn't provide 'to' field, will need to fetch separately if needed
-            date: email.date ? new Date(email.date).toISOString() : new Date().toISOString(),
-            preview: email.subject || '', // Using subject as preview for now
-            hasAttachments: false, // Backend doesn't provide this yet
-            isRead: false, // Backend doesn't provide this yet
-          }))
-          
-          setEmails(mappedEmails)
-          // Calculate total pages from total count
-          setTotalPages(Math.ceil(total / pageSize))
-          setTotalEmails(total)
-        } else {
-          throw new Error("Invalid response format")
-        }
+        setEmails(result.emails)
+        setTotalPages(Math.ceil(result.pagination.total / pageSize))
+        setTotalEmails(result.pagination.total)
       } catch (err) {
         onError(err instanceof Error ? err.message : "Failed to load emails")
         setEmails([])
@@ -92,7 +47,7 @@ export default function EmailList({ token, searchQuery, currentPage, onPageChang
     }
 
     fetchEmails()
-  }, [token, searchQuery, currentPage, apiUrl, onError])
+  }, [token, searchQuery, currentPage, onError])
 
   if (loading) {
     return (
@@ -148,3 +103,4 @@ export default function EmailList({ token, searchQuery, currentPage, onPageChang
     </div>
   )
 }
+

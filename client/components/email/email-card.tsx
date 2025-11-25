@@ -2,18 +2,7 @@
 
 import { useState } from "react"
 import { formatDistanceToNow } from "date-fns"
-
-interface Email {
-  id: string
-  messageId: string
-  subject: string
-  from: string
-  to: string
-  date: string
-  preview: string
-  hasAttachments: boolean
-  isRead: boolean
-}
+import type { Email } from "@/types"
 
 interface EmailCardProps {
   email: Email
@@ -103,3 +92,4 @@ export default function EmailCard({ email }: EmailCardProps) {
     </div>
   )
 }
+
