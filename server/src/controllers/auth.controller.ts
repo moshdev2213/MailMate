@@ -4,7 +4,7 @@ import { userService } from '../services/user.service';
 import { logger } from '../utils/logger.util';
 import { jwtService } from '../services/jwt.service';
 import { OAuth2Client } from 'google-auth-library';
-import { env } from 'process';
+import { env } from '../config/env';
 import { tokenService } from '../services/token.service';
 
 const oauth2Client = new OAuth2Client(
@@ -34,7 +34,9 @@ class AuthController {
 
             if (error) {
                 logger.error('Google OAuth error', { error });
-                return sendError(res, 'Authentication failed', 'AUTH_ERROR', 401);
+                const frontendUrl = new URL(`${env.FRONTEND_URL}/auth/callback`);
+                frontendUrl.searchParams.set('error', 'Authentication failed');
+                return res.redirect(frontendUrl.toString());
             }
 
             if (!code || typeof code !== 'string') {
@@ -81,15 +83,17 @@ class AuthController {
 
             const jwtRefreshToken = jwtService.generateRefreshToken(user.id);
 
-            sendSuccess(res, {
-                user: {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                },
-                accessToken: jwtAccessToken,
-                refreshToken: jwtRefreshToken,
-            });
+            // Redirect to frontend with tokens in URL
+            const frontendUrl = new URL(`${env.FRONTEND_URL}/auth/callback`);
+            frontendUrl.searchParams.set('accessToken', jwtAccessToken);
+            frontendUrl.searchParams.set('refreshToken', jwtRefreshToken);
+            frontendUrl.searchParams.set('userId', user.id.toString());
+            frontendUrl.searchParams.set('email', user.email);
+            if (user.name) {
+                frontendUrl.searchParams.set('name', user.name);
+            }
+
+            res.redirect(frontendUrl.toString());
         } catch (error) {
             logger.error('Google OAuth callback error', { error });
             next(error);
