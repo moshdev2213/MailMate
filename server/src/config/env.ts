@@ -63,7 +63,7 @@ export const env: EnvConfig = {
     JWT_SECRET: getEnvVar('JWT_SECRET'),
     JWT_REFRESH_SECRET: getEnvVar('JWT_REFRESH_SECRET'),
     ENCRYPTION_KEY: getEnvVar('ENCRYPTION_KEY'),
-    FRONTEND_URL: getEnvVar('FRONTEND_URL', 'http://localhost:3000'),
+    FRONTEND_URL: getEnvVar('FRONTEND_URL', 'http://localhost:5173'),
     LOG_LEVEL: getEnvVar('LOG_LEVEL', 'info'),
     ELASTICSEARCH_URL: getEnvVar('ELASTICSEARCH_URL', 'http://elasticsearch:9200'),
     LOGSTASH_HOST: getEnvVar('LOGSTASH_HOST', 'logstash'),
