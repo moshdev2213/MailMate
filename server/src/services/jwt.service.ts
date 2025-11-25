@@ -16,7 +16,7 @@ class JwtService {
     return jwt.sign(
       { ...payload, type: 'access' },
       env.JWT_SECRET,
-      { expiresIn: '15m' }
+      { expiresIn: '30m' }
     );
   }
 

@@ -9,8 +9,12 @@ export const appConfig = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   },
+  email: {
+    defaultFetchLimit: 50,
+    maxFetchLimit: 200,
+  },
   pagination: {
     defaultLimit: 20,
-    maxLimit: 100,
+    maxLimit: 300,
   }
 };
