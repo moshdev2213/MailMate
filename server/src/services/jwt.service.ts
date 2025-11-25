@@ -11,14 +11,14 @@ export interface RefreshTokenPayload {
   userId: number;
 }
 
-export const jwtService = {
+class JwtService {
   generateAccessToken(payload: TokenPayload): string {
     return jwt.sign(
       { ...payload, type: 'access' },
       env.JWT_SECRET,
       { expiresIn: '15m' }
     );
-  },
+  }
 
   generateRefreshToken(userId: number): string {
     return jwt.sign(
@@ -26,12 +26,12 @@ export const jwtService = {
       env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
-  },
+  }
 
   verifyAccessToken(token: string): TokenPayload {
     try {
       const decoded = jwt.verify(token, env.JWT_SECRET) as any;
-      
+
       if (decoded.type !== 'access') {
         throw new Error('Invalid token type');
       }
@@ -49,12 +49,12 @@ export const jwtService = {
       }
       throw error;
     }
-  },
+  }
 
   verifyRefreshToken(token: string): RefreshTokenPayload {
     try {
       const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET) as any;
-      
+
       if (decoded.type !== 'refresh') {
         throw new Error('Invalid token type');
       }
@@ -71,6 +71,7 @@ export const jwtService = {
       }
       throw error;
     }
-  },
+  }
 };
 
+export const jwtService = new JwtService()
