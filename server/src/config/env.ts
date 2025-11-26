@@ -21,6 +21,8 @@ interface EnvConfig {
     ELASTICSEARCH_URL: string;
     LOGSTASH_HOST: string;
     LOGSTASH_PORT: number;
+    DATABASE_CONNECTION_LIMIT?: number;
+    DATABASE_CONNECTION_TIMEOUT?: number;
 }
 
 
@@ -68,4 +70,6 @@ export const env: EnvConfig = {
     ELASTICSEARCH_URL: getEnvVar('ELASTICSEARCH_URL', 'http://elasticsearch:9200'),
     LOGSTASH_HOST: getEnvVar('LOGSTASH_HOST', 'logstash'),
     LOGSTASH_PORT: getEnvNumber('LOGSTASH_PORT', 5044),
+    DATABASE_CONNECTION_LIMIT: getEnvNumber('DATABASE_CONNECTION_LIMIT', 20),
+    DATABASE_CONNECTION_TIMEOUT: getEnvNumber('DATABASE_CONNECTION_TIMEOUT', 30000),
 };
