@@ -8,6 +8,8 @@ export interface GetEmailsParams {
   offset: number
   limit: number
   search?: string
+  refresh?: boolean
+  fetchLimit?: number
 }
 
 export interface GetEmailsResponse {
@@ -20,11 +22,15 @@ export async function getEmails({
   offset,
   limit,
   search,
+  refresh,
+  fetchLimit,
 }: GetEmailsParams): Promise<GetEmailsResponse> {
   const params = new URLSearchParams({
     offset: offset.toString(),
     limit: limit.toString(),
     ...(search && { search }),
+    ...(refresh !== undefined && { refresh: refresh.toString() }),
+    ...(fetchLimit !== undefined && { fetchLimit: fetchLimit.toString() }),
   })
 
   const response = await fetch(`${apiUrl}/api/email?${params.toString()}`, {
