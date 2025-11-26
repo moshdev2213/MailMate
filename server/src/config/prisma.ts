@@ -10,7 +10,9 @@ const adapter = new PrismaMariaDb({
   password: env.DATABASE_PASSWORD,
   database: env.DATABASE_NAME,
   port: env.DATABASE_PORT,
-  connectionLimit: 5,
+  connectionLimit: env.DATABASE_CONNECTION_LIMIT || 20,
+  // Increase timeout for acquiring connections from pool (default is 10000ms)
+  acquireTimeout: env.DATABASE_CONNECTION_TIMEOUT || 30000,
 });
 
 const prisma = new PrismaClient({
