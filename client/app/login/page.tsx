@@ -24,7 +24,7 @@ export default function LoginPage() {
       setError(null)
 
       // Get the backend URL from environment or use default
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL
       const authUrl = `${backendUrl}/api/auth/google`
 
       window.location.href = authUrl
