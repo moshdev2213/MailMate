@@ -5,6 +5,10 @@ FROM node:lts-alpine AS builder
 
 WORKDIR /app
 
+# Accept build argument for API URL
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Install dependencies
 COPY package*.json ./
 RUN npm install
@@ -12,7 +16,7 @@ RUN npm install
 # Copy the rest of the source
 COPY . .
 
-# Build the app
+# Build the app (NEXT_PUBLIC_API_URL will be embedded at build time)
 RUN npm run build
 
 # -------------------------------
