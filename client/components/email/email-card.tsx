@@ -65,9 +65,6 @@ export default function EmailCard({ email }: EmailCardProps) {
               <div className="bg-slate-50 p-3 rounded text-sm text-slate-700 max-h-64 overflow-auto">
                 {email.preview}
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span>To: {email.to}</span>
-              </div>
             </div>
           )}
 

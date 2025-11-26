@@ -1,10 +1,11 @@
 // Email API calls
 
-import { apiUrl, getAuthHeaders } from "./client"
+import { fetchWithAuth } from "./fetchWithAuth"
+import { getTokenFromCookie } from "./token"
 import type { Email, ApiResponse, PaginationData } from "@/types"
 
 export interface GetEmailsParams {
-  token: string
+  token?: string
   offset: number
   limit: number
   search?: string
@@ -33,8 +34,9 @@ export async function getEmails({
     ...(fetchLimit !== undefined && { fetchLimit: fetchLimit.toString() }),
   })
 
-  const response = await fetch(`${apiUrl}/api/email?${params.toString()}`, {
-    headers: getAuthHeaders(token),
+  const response = await fetchWithAuth(`/api/email?${params.toString()}`, {
+    token,
+    method: "GET",
   })
 
   if (!response.ok) {
