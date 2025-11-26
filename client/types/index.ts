@@ -40,3 +40,4 @@ export interface EmailListResponse {
   pagination: PaginationData
 }
 
+
