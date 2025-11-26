@@ -29,6 +29,7 @@ jobs:
         working-directory: client
         run: |
           docker build \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
             -f Dockerfile \
             -t $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
             .
