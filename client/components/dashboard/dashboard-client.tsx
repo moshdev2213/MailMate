@@ -7,6 +7,7 @@ import SearchBar from "@/components/email/search-bar"
 import Header from "@/components/layout/header"
 import ErrorAlert from "@/components/layout/error-alert"
 import { getCurrentUser, logout } from "@/lib/api/auth"
+import { clearTokens } from "@/lib/api/token"
 import type { User } from "@/types"
 
 export default function DashboardClient({ token }: { token: string }) {
@@ -21,6 +22,7 @@ export default function DashboardClient({ token }: { token: string }) {
     const fetchUser = async () => {
       try {
         setLoading(true)
+        // Token is optional now - will be retrieved from cookie if not provided
         const userData = await getCurrentUser(token)
         setUser(userData)
       } catch (err) {
@@ -37,11 +39,14 @@ export default function DashboardClient({ token }: { token: string }) {
   const handleLogout = useCallback(async () => {
     try {
       await logout(token)
-      document.cookie = "authToken=; max-age=0; path=/;"
+      clearTokens()
       router.push("/")
     } catch (err) {
       console.error("Logout error:", err)
       setError("Failed to logout")
+      // Clear tokens anyway
+      clearTokens()
+      router.push("/")
     }
   }, [token, router])
 
