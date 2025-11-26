@@ -1,4 +1,4 @@
-name: Server - Production Deploy
+name: Client - Production Deploy
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
 
     env:
       DOCKER_REGISTRY: registry.digitalocean.com
-      IMAGE_NAME: mosh-do-docker-reg/mailmate-server
+      IMAGE_NAME: mosh-do-docker-reg/mailmate-client
       IMAGE_TAG: production
 
     steps:
@@ -26,7 +26,7 @@ jobs:
           password: ${{ secrets.DO_API_TOKEN }}
 
       - name: Build Docker image
-        working-directory: server
+        working-directory: client
         run: |
           docker build \
             -f Dockerfile \
@@ -34,6 +34,7 @@ jobs:
             .
 
       - name: Push Docker image
-        working-directory: server
+        working-directory: client
         run: |
           docker push $DOCKER_REGISTRY/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+

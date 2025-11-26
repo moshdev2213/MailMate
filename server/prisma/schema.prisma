@@ -13,29 +13,29 @@ datasource db {
 }
 
 model User {
-    id           Int             @id @default(autoincrement())
-    googleId     String          @unique
-    email        String          @unique
-    name         String?
-    refreshToken String? // encrypted AES-256-GCM
-    createdAt    DateTime        @default(now())
-    updatedAt    DateTime        @updatedAt
-    emails       EmailMetadata[]
+  id           Int             @id @default(autoincrement())
+  googleId     String          @unique
+  email        String          @unique
+  name         String?
+  refreshToken String?         @db.Text // encrypted AES-256-GCM
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  emails       EmailMetadata[]
 
-    @@map("users")
+  @@map("users")
 }
 
 model EmailMetadata {
-    id        Int       @id @default(autoincrement())
-    userId    Int
-    gmailUid  String
-    from      String?
-    subject   String?
-    messageId String?
-    date      DateTime?
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  gmailUid  String
+  from      String?
+  subject   String?
+  messageId String?
+  date      DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([userId, gmailUid])
-    @@index([userId, date])
-    @@map("email_metadata")
+  @@unique([userId, gmailUid])
+  @@index([userId, date])
+  @@map("email_metadata")
 }
