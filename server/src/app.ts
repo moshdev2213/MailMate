@@ -1,9 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors'
+import swaggerUi from 'swagger-ui-express';
 import { appConfig } from './config/app';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 import { logger } from './utils/logger.util';
 import { env } from './config/env';
+import { swaggerSpec } from './config/swagger';
 import routes from './routes/index.routes';
 
 const app = express()
@@ -22,6 +24,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     })
     next()
 })
+
+// Swagger documentation
+app.get('/api-docs.json', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'MailMate API Documentation',
+}));
 
 // app api routes
 app.use('/api',routes)
