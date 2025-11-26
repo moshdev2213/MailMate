@@ -33,6 +33,8 @@ export default function EmailList({ token, searchQuery, currentPage, onPageChang
           offset,
           limit: pageSize,
           search: searchQuery || undefined,
+          refresh: true,
+          fetchLimit: 200,
         })
 
         setEmails(result.emails)
