@@ -8,25 +8,6 @@ A Simple full-stack Gmail IMAP viewer application that allows users to securely 
 
 **API Documentation:** [https://mailmate-server-production-p8urd.ondigitalocean.app/api-docs](https://mailmate-server-production-p8urd.ondigitalocean.app/api-docs)
 
-## ✨ Features
-
-### Backend
-- 🔐 Google OAuth 2.0 Authentication
-- 📧 Gmail IMAP Integration
-- 🔒 JWT Token Management with encryption
-- 📊 Email Metadata Storage (MySQL)
-- 🔍 Email Search & Pagination
-- 📝 Swagger API Documentation
-- 📈 Structured Logging (Winston)
-
-### Frontend
-- 🎨 Modern UI with shadcn/ui and Tailwind CSS
-- 📱 Fully Responsive Design
-- 🔍 Real-time Email Search
-- 📄 Email Pagination
-- 🔒 Secure Token Management
-- ⚡ Next.js 16 with App Router
-
 ## 📋 Prerequisites
 
 - Node.js (v18 or higher)
@@ -172,30 +153,12 @@ FRONTEND_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the ISC License.
-
 ## 👤 Author
 
 **moshdev2213**
 
 - GitHub: [@moshdev2213](https://github.com/moshdev2213)
 - Repository: [MailMate](https://github.com/moshdev2213/MailMate)
-
-## 🐛 Issues
-
-If you encounter any issues, please report them on the [GitHub Issues page](https://github.com/moshdev2213/MailMate/issues).
 
 ---
 
